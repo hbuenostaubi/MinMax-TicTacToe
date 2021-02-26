@@ -1,0 +1,1245 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: Harrison  Bueno
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Sat Jul 21 17:25:15 2018
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 7 7 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 6
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 532 def
+/d_header_w 794 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 532 def
+/cols 2 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (typescript) def
+/fdir (.) def
+/ftail (typescript) def
+% User defined strings:
+/fmodstr (Sat Jul 21 17:24:15 2018) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 522 M
+(Script started on Sat Jul 21 17:21:28 2018) s
+5 514 M
+(\\033[?1034hbash-3.2$ cat info.info ) s
+5 506 M
+(P-7.11) s
+5 498 M
+(Level 5) s
+5 490 M
+(Harrison Bueno) s
+5 474 M
+(bash-3.2$ cat main\\007) s
+5 466 M
+(main.cpp   main2.cpp  main3.cpp  ) s
+5 458 M
+(bash-3.2$ cat main.cpp) s
+5 442 M
+(#include <iostream>) s
+5 434 M
+(#include "game.h") s
+5 426 M
+(#include "game.cpp") s
+5 410 M
+(using namespace std;) s
+5 394 M
+(int main\(\) {) s
+5 386 M
+(    ) s
+5 378 M
+(    Game tictactoe;) s
+5 370 M
+(    tictactoe.play\(\);) s
+5 362 M
+(    return 0;) s
+5 354 M
+(}) s
+5 346 M
+(bash-3.2$ cat ga\\007me.h ) s
+105.8 346 M
+(\\033[K) s
+5 330 M
+(#ifndef game_h) s
+5 322 M
+(#define game_h) s
+5 314 M
+(#include <iostream>) s
+5 298 M
+(using namespace std;) s
+5 282 M
+(const char human = 'X';) s
+5 274 M
+(const char ai = 'O';) s
+5 258 M
+(enum Player { HUMAN, AI };  //creating data type \(human or AI\)) s
+5 242 M
+(struct Move{) s
+5 234 M
+(    int x;) s
+5 226 M
+(    int y;};) s
+5 210 M
+(class Game {) s
+5 202 M
+(    char board[3][3];) s
+5 194 M
+(    ) s
+5 186 M
+(public:) s
+5 178 M
+(    Game\(\);) s
+5 170 M
+(    void printBoard\(\); // Prints the board) s
+5 162 M
+(    bool gameOver\(\); // Returns true if a winner has been found or there are no empty spaces) s
+5 154 M
+(    bool checkWin\(Player player\);// Check for a win) s
+5 146 M
+(    void play\(\); // Primary game driver, loops through until there's a winner) s
+5 138 M
+(    void getHumanMove\(\);// Takes in values from the input stream and places them on the boar) s
+5 130 M
+(d) s
+5 122 M
+(   int score\(\); // Returns 10 for human win, -10 for AI win, 0 for draw) s
+5 114 M
+(    Move minimax\(char AIboard[3][3]\);// Returns the best AI move's x, y coordinates) s
+5 106 M
+(    int minSearch\(char AIboard[3][3]\);) s
+5 98 M
+(    int maxSearch\(char AIboard[3][3]\);) s
+5 90 M
+(  ) s
+5 82 M
+(};) s
+5 66 M
+(#endif /* game_h */) s
+5 58 M
+(bash-3.2$ cat game.cpp) s
+5 50 M
+(#include <iostream>) s
+5 42 M
+(#include <sstream>) s
+5 34 M
+(#include <iomanip>) s
+5 26 M
+(#include "game.h") s
+5 10 M
+(using namespace std;) s
+402 522 M
+(Game::Game\(\) {) s
+402 514 M
+(    for\(int i = 0; i < 3; i++\) {) s
+402 506 M
+(        for\(int j = 0; j < 3; j++\) {) s
+402 498 M
+(            board[i][j] = '-';}}}) s
+402 482 M
+(void Game::printBoard\(\) {) s
+402 474 M
+(    cout << "  Tic-Tac-Toe! Go! "<<endl;) s
+402 466 M
+(    cout << "-------------------";) s
+402 458 M
+(    for\(int i = 0; i < 3; i++\) {) s
+402 450 M
+(        cout << '\\n' << "|";) s
+402 442 M
+(        for\(int j = 0; j < 3; j++\) {) s
+402 434 M
+(            cout << setw\(3\) << board[i][j] << setw\(3\) << " |";) s
+402 426 M
+(        }) s
+402 418 M
+(    }) s
+402 410 M
+(    cout << '\\n' << "-------------------" << '\\n';) s
+402 402 M
+(}) s
+402 386 M
+(bool Game::gameOver\(\) {) s
+402 378 M
+(    if\(checkWin\(HUMAN\)\) return true;) s
+402 370 M
+(    else if\(checkWin\(AI\)\) return true;) s
+402 362 M
+(    ) s
+402 354 M
+(    bool emptySpace = false;) s
+402 346 M
+(    for\(int i = 0; i < 3; i++\) {) s
+402 338 M
+(        if\(board[i][0] == '-' || board[i][1] == '-' || board[i][2] == '-'\)) s
+402 330 M
+(            emptySpace = true;) s
+402 322 M
+(    }) s
+402 314 M
+(    return !emptySpace;) s
+402 306 M
+(}) s
+402 290 M
+(bool Game::checkWin\(Player player\) {) s
+402 282 M
+(    char playerChar;) s
+402 274 M
+(    if\(player == HUMAN\) playerChar = human;) s
+402 266 M
+(    else playerChar = ai;) s
+402 258 M
+(    ) s
+402 250 M
+(    for\(int i = 0; i < 3; i++\) {) s
+402 242 M
+(        // Check horizontals) s
+402 234 M
+(        if\(board[i][0] == playerChar && board[i][1] == playerChar) s
+402 226 M
+(           && board[i][2] == playerChar\)) s
+402 218 M
+(            return true;) s
+402 210 M
+(        ) s
+402 202 M
+(        // Check verticals) s
+402 194 M
+(        if\(board[0][i] == playerChar && board[1][i] == playerChar) s
+402 186 M
+(           && board[2][i] == playerChar\)) s
+402 178 M
+(            return true;) s
+402 170 M
+(    }) s
+402 162 M
+(    ) s
+402 154 M
+(    // Check diagonals) s
+402 146 M
+(    if \(board[0][0] == playerChar && board[1][1] == playerChar) s
+402 138 M
+(        && board[2][2] == playerChar\) {) s
+402 130 M
+(        return true;) s
+402 122 M
+(    } else if \(board[0][2] == playerChar && board[1][1] == playerChar) s
+402 114 M
+(               && board[2][0] == playerChar\) {) s
+402 106 M
+(        return true;) s
+402 98 M
+(    }) s
+402 90 M
+(    ) s
+402 82 M
+(    return false;) s
+402 74 M
+(}) s
+402 58 M
+(int Game::score\(\) {) s
+402 50 M
+(    if\(checkWin\(HUMAN\)\) { return 10; }) s
+402 42 M
+(    else if\(checkWin\(AI\)\) { return -10; }) s
+402 34 M
+(    return 0; // draw) s
+402 26 M
+(}) s
+402 10 M
+(Move Game::minimax\(char AIboard[3][3]\) {) s
+402 2 M
+(    int bestMoveScore = 100; //) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (typescript) def
+/fdir (.) def
+/ftail (typescript) def
+% User defined strings:
+/fmodstr (Sat Jul 21 17:24:15 2018) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 522 M
+(    Move bestMove;) s
+5 514 M
+(    for\(int i = 0; i < 3; i++\) {) s
+5 506 M
+(        for\(int j = 0; j < 3; j++\) {) s
+5 498 M
+(            if\(AIboard[i][j] == '-'\) {) s
+5 490 M
+(                AIboard[i][j] = ai;) s
+5 482 M
+(                int tempMoveScore = maxSearch\(AIboard\);) s
+5 474 M
+(                if\(tempMoveScore <= bestMoveScore\) {) s
+5 466 M
+(                    bestMoveScore = tempMoveScore;) s
+5 458 M
+(                    bestMove.x = i;) s
+5 450 M
+(                    bestMove.y = j;) s
+5 442 M
+(                }) s
+5 434 M
+(                AIboard[i][j] = '-';) s
+5 426 M
+(            }) s
+5 418 M
+(        }) s
+5 410 M
+(    }) s
+5 402 M
+(    ) s
+5 394 M
+(    return bestMove;) s
+5 386 M
+(}) s
+5 370 M
+(int Game::maxSearch\(char AIboard[3][3]\) {) s
+5 362 M
+(    if\(gameOver\(\)\) return score\(\);) s
+5 354 M
+(    Move bestMove;) s
+5 346 M
+(    ) s
+5 338 M
+(    int bestMoveScore = -1000;) s
+5 330 M
+(    for\(int i = 0; i < 3; i++\) {) s
+5 322 M
+(        for\(int j = 0; j < 3; j++\) {) s
+5 314 M
+(            if\(AIboard[i][j] == '-'\) {) s
+5 306 M
+(                AIboard[i][j] = human;) s
+5 298 M
+(                int tempMoveScore = minSearch\(AIboard\);) s
+5 290 M
+(                if\(tempMoveScore >= bestMoveScore\) {) s
+5 282 M
+(                    bestMoveScore = tempMoveScore;) s
+5 274 M
+(                    bestMove.x = i;) s
+5 266 M
+(                    bestMove.y = j;) s
+5 258 M
+(                }) s
+5 250 M
+(                AIboard[i][j] = '-';) s
+5 242 M
+(            }) s
+5 234 M
+(        }) s
+5 226 M
+(    }) s
+5 218 M
+(    ) s
+5 210 M
+(    return bestMoveScore;) s
+5 202 M
+(}) s
+5 186 M
+(int Game::minSearch\(char AIboard[3][3]\) {) s
+5 178 M
+(    if\(gameOver\(\)\) return score\(\);) s
+5 170 M
+(    Move bestMove;) s
+5 162 M
+(    ) s
+5 154 M
+(    int bestMoveScore = 1000;) s
+5 146 M
+(    for\(int i = 0; i < 3; i++\) {) s
+5 138 M
+(        for\(int j = 0; j < 3; j++\) {) s
+5 130 M
+(            if\(AIboard[i][j] == '-'\) {) s
+5 122 M
+(                AIboard[i][j] = ai;) s
+5 114 M
+(                int tempMove = maxSearch\(AIboard\);) s
+5 106 M
+(                if\(tempMove <= bestMoveScore\) {) s
+5 98 M
+(                    bestMoveScore = tempMove;) s
+5 90 M
+(                    bestMove.x = i;) s
+5 82 M
+(                    bestMove.y = j;) s
+5 74 M
+(                }) s
+5 66 M
+(                AIboard[i][j] = '-';}}}) s
+5 58 M
+(    return bestMoveScore;}) s
+5 42 M
+(void Game::getHumanMove\(\) {) s
+5 34 M
+(    int x, y = -1;) s
+5 26 M
+(    while\(x < 0 || x > 2 || y < 0 || y > 2\) {) s
+5 18 M
+(        // Loop until a valid move is entered) s
+5 10 M
+(        cout << "Enter your move in coordinate form, ex: \(1,3\)." << endl;) s
+5 2 M
+(        cout << "Your Move: ";) s
+402 522 M
+(        char c;) s
+402 514 M
+(        string restofline;) s
+402 506 M
+(        cin >> c >> c;) s
+402 498 M
+(        x = c - '0' - 1;) s
+402 490 M
+(        cin >> c >> c;) s
+402 482 M
+(        y = c - '0' - 1;) s
+402 474 M
+(        getline\(cin, restofline\); // get garbage chars after move) s
+402 466 M
+(    }) s
+402 458 M
+(    board[x][y] = human;) s
+402 450 M
+(}) s
+402 434 M
+(void Game::play\(\) {) s
+402 426 M
+(    int turn = 0;) s
+402 418 M
+(    printBoard\(\);) s
+402 410 M
+(    while\(!checkWin\(HUMAN\) && !checkWin\(AI\) && !gameOver\(\)\) {) s
+402 402 M
+(        // human move) s
+402 394 M
+(        if\(turn % 2 == 0\) {) s
+402 386 M
+(            getHumanMove\(\);) s
+402 378 M
+(            if\(checkWin\(HUMAN\)\) cout << "Human Player Wins" << endl;) s
+402 370 M
+(            turn++;) s
+402 362 M
+(            printBoard\(\);) s
+402 354 M
+(        } else {) s
+402 346 M
+(            cout << endl << "Computer Player Move:" << endl;) s
+402 338 M
+(            Move AImove = minimax\(board\);) s
+402 330 M
+(            board[AImove.x][AImove.y] = ai;) s
+402 322 M
+(            if\(checkWin\(AI\)\) cout << "Computer Player Wins" << endl;) s
+402 314 M
+(            turn++;) s
+402 306 M
+(            printBoard\(\);) s
+402 298 M
+(        }}}) s
+402 290 M
+(bash-3.2$ exit) s
+456.6 290 M
+(\\033[K) s
+477.6 290 M
+(\\033[K) s
+498.6 290 M
+(\\033[K) s
+519.6 290 M
+(\\033[K\\007/\\007) s
+578.4 290 M
+(\\033[K\\007\\007\\007\\007\\007\\007\\007\\007\\007\\007exit) s
+402 282 M
+( a.) s
+410.4 282 M
+(\\033[K) s
+431.4 282 M
+(\\033[K) s
+452.4 282 M
+(\\033[K) s
+473.4 282 M
+(\\033[K) s
+494.4 282 M
+(\\033[K) s
+515.4 282 M
+(\\033[K) s
+536.4 282 M
+(\\033[K./a.out) s
+402 274 M
+(  Tic-Tac-Toe! Go! ) s
+402 266 M
+(-------------------) s
+402 258 M
+(|  -  |  -  |  -  |) s
+402 250 M
+(|  -  |  -  |  -  |) s
+402 242 M
+(|  -  |  -  |  -  |) s
+402 234 M
+(-------------------) s
+402 226 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+402 218 M
+(Your Move: \(1,2) s
+460.8 218 M
+( ) s
+460.8 218 M
+(3\)) s
+402 210 M
+(  Tic-Tac-Toe! Go! ) s
+402 202 M
+(-------------------) s
+402 194 M
+(|  -  |  -  |  X  |) s
+402 186 M
+(|  -  |  -  |  -  |) s
+402 178 M
+(|  -  |  -  |  -  |) s
+402 170 M
+(-------------------) s
+402 154 M
+(Computer Player Move:) s
+402 146 M
+(  Tic-Tac-Toe! Go! ) s
+402 138 M
+(-------------------) s
+402 130 M
+(|  -  |  -  |  X  |) s
+402 122 M
+(|  -  |  O  |  -  |) s
+402 114 M
+(|  -  |  -  |  -  |) s
+402 106 M
+(-------------------) s
+402 98 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+402 90 M
+(Your Move: \(3,1\)) s
+402 82 M
+(  Tic-Tac-Toe! Go! ) s
+402 74 M
+(-------------------) s
+402 66 M
+(|  -  |  -  |  X  |) s
+402 58 M
+(|  -  |  O  |  -  |) s
+402 50 M
+(|  X  |  -  |  -  |) s
+402 42 M
+(-------------------) s
+402 26 M
+(Computer Player Move:) s
+402 18 M
+(  Tic-Tac-Toe! Go! ) s
+402 10 M
+(-------------------) s
+402 2 M
+(|  -  |  -  |  X  |) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 3 def
+/fname (typescript) def
+/fdir (.) def
+/ftail (typescript) def
+% User defined strings:
+/fmodstr (Sat Jul 21 17:24:15 2018) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+column_lines
+column_borders
+do_header
+5 522 M
+(|  -  |  O  |  -  |) s
+5 514 M
+(|  X  |  O  |  -  |) s
+5 506 M
+(-------------------) s
+5 498 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+5 490 M
+(Your Move: \(1,2\)) s
+5 482 M
+(  Tic-Tac-Toe! Go! ) s
+5 474 M
+(-------------------) s
+5 466 M
+(|  -  |  X  |  X  |) s
+5 458 M
+(|  -  |  O  |  -  |) s
+5 450 M
+(|  X  |  O  |  -  |) s
+5 442 M
+(-------------------) s
+5 426 M
+(Computer Player Move:) s
+5 418 M
+(  Tic-Tac-Toe! Go! ) s
+5 410 M
+(-------------------) s
+5 402 M
+(|  O  |  X  |  X  |) s
+5 394 M
+(|  -  |  O  |  -  |) s
+5 386 M
+(|  X  |  O  |  -  |) s
+5 378 M
+(-------------------) s
+5 370 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+5 362 M
+(Your Move: \(3,3\() s
+68 362 M
+( ) s
+68 362 M
+(\)) s
+5 354 M
+(  Tic-Tac-Toe! Go! ) s
+5 346 M
+(-------------------) s
+5 338 M
+(|  O  |  X  |  X  |) s
+5 330 M
+(|  -  |  O  |  -  |) s
+5 322 M
+(|  X  |  O  |  X  |) s
+5 314 M
+(-------------------) s
+5 298 M
+(Computer Player Move:) s
+5 290 M
+(  Tic-Tac-Toe! Go! ) s
+5 282 M
+(-------------------) s
+5 274 M
+(|  O  |  X  |  X  |) s
+5 266 M
+(|  -  |  O  |  O  |) s
+5 258 M
+(|  X  |  O  |  X  |) s
+5 250 M
+(-------------------) s
+5 242 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+5 234 M
+(Your Move: \(2) s
+55.4 234 M
+( ) s
+55.4 234 M
+(1,2\)) s
+5 226 M
+(  Tic-Tac-Toe! Go! ) s
+5 218 M
+(-------------------) s
+5 210 M
+(|  O  |  X  |  X  |) s
+5 202 M
+(|  -  |  O  |  O  |) s
+5 194 M
+(|  X  |  O  |  X  |) s
+5 186 M
+(-------------------) s
+5 170 M
+(Computer Player Move:) s
+5 162 M
+(Computer Player Wins) s
+5 154 M
+(  Tic-Tac-Toe! Go! ) s
+5 146 M
+(-------------------) s
+5 138 M
+(|  O  |  X  |  X  |) s
+5 130 M
+(|  O  |  O  |  O  |) s
+5 122 M
+(|  X  |  O  |  X  |) s
+5 114 M
+(-------------------) s
+5 106 M
+(bash-3.2$ ./a.out) s
+5 98 M
+(  Tic-Tac-Toe! Go! ) s
+5 90 M
+(-------------------) s
+5 82 M
+(|  -  |  -  |  -  |) s
+5 74 M
+(|  -  |  -  |  -  |) s
+5 66 M
+(|  -  |  -  |  -  |) s
+5 58 M
+(-------------------) s
+5 50 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+5 42 M
+(Your Move: \(1,1\)) s
+5 34 M
+(  Tic-Tac-Toe! Go! ) s
+5 26 M
+(-------------------) s
+5 18 M
+(|  X  |  -  |  -  |) s
+5 10 M
+(|  -  |  -  |  -  |) s
+5 2 M
+(|  -  |  -  |  -  |) s
+402 522 M
+(-------------------) s
+402 506 M
+(Computer Player Move:) s
+402 498 M
+(  Tic-Tac-Toe! Go! ) s
+402 490 M
+(-------------------) s
+402 482 M
+(|  X  |  -  |  -  |) s
+402 474 M
+(|  -  |  O  |  -  |) s
+402 466 M
+(|  -  |  -  |  -  |) s
+402 458 M
+(-------------------) s
+402 450 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+402 442 M
+(Your Move: \(1,2\)) s
+402 434 M
+(  Tic-Tac-Toe! Go! ) s
+402 426 M
+(-------------------) s
+402 418 M
+(|  X  |  X  |  -  |) s
+402 410 M
+(|  -  |  O  |  -  |) s
+402 402 M
+(|  -  |  -  |  -  |) s
+402 394 M
+(-------------------) s
+402 378 M
+(Computer Player Move:) s
+402 370 M
+(  Tic-Tac-Toe! Go! ) s
+402 362 M
+(-------------------) s
+402 354 M
+(|  X  |  X  |  O  |) s
+402 346 M
+(|  -  |  O  |  -  |) s
+402 338 M
+(|  -  |  -  |  -  |) s
+402 330 M
+(-------------------) s
+402 322 M
+(Enter your move in coordinate form, ex: \(1,3\).) s
+402 314 M
+(Your Move: \(3,3\() s
+465 314 M
+( ) s
+465 314 M
+(\)) s
+402 306 M
+(  Tic-Tac-Toe! Go! ) s
+402 298 M
+(-------------------) s
+402 290 M
+(|  X  |  X  |  O  |) s
+402 282 M
+(|  -  |  O  |  -  |) s
+402 274 M
+(|  -  |  -  |  X  |) s
+402 266 M
+(-------------------) s
+402 250 M
+(Computer Player Move:) s
+402 242 M
+(Computer Player Wins) s
+402 234 M
+(  Tic-Tac-Toe! Go! ) s
+402 226 M
+(-------------------) s
+402 218 M
+(|  X  |  X  |  O  |) s
+402 210 M
+(|  -  |  O  |  -  |) s
+402 202 M
+(|  O  |  -  |  X  |) s
+402 194 M
+(-------------------) s
+402 186 M
+(bash-3.2$ exit) s
+402 178 M
+(exit) s
+402 162 M
+(Script done on Sat Jul 21 17:24:15 2018) s
+_R
+S
+%%Trailer
+%%Pages: 3
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
